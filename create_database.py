@@ -124,6 +124,7 @@ def main(division):
     random_csv('test.csv','training_database.csv', 'testing_database.csv', division)  
     print("Training and testing database created\n")
 
-
+'''
 if __name__ == "__main__":
     main(0.8)
+'''
