@@ -3,6 +3,15 @@ import csv
 import cv2 as cv
 import os
 import pandas as pd
+import math
+import sys
+
+def remove_file(filename):
+    if os.path.isfile(filename):
+        print("Removing " + filename + '\n')
+        os.remove(filename)
+    else:
+        print(filename + "file does not exist, creating one!\n")
 
 def create_database(image_path):
     
@@ -42,21 +51,54 @@ def create_database(image_path):
             writer.writerow(row)
 
 
-def random_csv(source_file, new_file):
+def random_csv(source_file, new_file_train, new_file_test, perc):
+    dice_numbers = [1, 2, 3, 4, 5, 6]
+
     df = pd.read_csv(source_file, header = None)
-    ds = df.sample(frac=1).reset_index(drop = True)  
-    ds.to_csv(new_file, header = None, index = False)
-    #os.remove('test.csv')
+    
+    if perc < 0:
+        print("Percentage must be positive!")
+        print("Traindataset and testdataset not created!")
+        sys.exit()
+    elif perc > 1:
+        perc = (float(perc) / 100)
+    elif perc >= 0 and perc <= 1:
+        pass
 
-def main():
+    print("Percentage of the trainningset: " + str(perc))
+    print("Percentage of the trainningset: " + str(1-perc) + "\n")
 
-    if os.path.isfile('test.csv'):
-#        answer = input("The 'test.csv' file already exists. Do you want to remove it? yes or no?")
-#        if answer == 'yes':
-        os.remove('test.csv')
-#            print("Test file removed")
-#        else:
-#        	pass
+    for number in dice_numbers:
+        dn = df.loc[df[784] == number]
+        train_numbers = int(math.ceil(len(dn) * perc))
+        test_numbers = len(dn) - train_numbers
+        if test_numbers == 0:
+            test_numbers = 1
+
+        df_percTrain = dn.head(train_numbers)
+        df_percTest = dn.tail(test_numbers)
+        if number == 1:
+            df_train = df_percTrain 
+            df_test = df_percTest
+        else:
+            df_train = df_train.append(df_percTrain)
+            df_test = df_test.append(df_percTest)
+
+    ds_train = df_train.sample(frac=1).reset_index(drop = True)
+    ds_test = df_test.sample(frac=1).reset_index(drop = True)  
+    
+    ds_train.to_csv(new_file_train, header = None, index = False)
+    ds_test.to_csv(new_file_test, header = None, index = False)
+
+    remove_file(source_file)
+
+def main(division):
+
+    testFile = 'test.csv'
+    trainingFile = 'training_database.csv'
+    testingFile = 'testing_database.csv'
+
+    remove_file(testFile)
 
     chiffre_path1 = os.getcwd() + '/chiffres/Numero1/'
     chiffre_path2 = os.getcwd() + '/chiffres/Numero2/'
@@ -67,28 +109,21 @@ def main():
 
     img_paths = [chiffre_path1, chiffre_path2, chiffre_path3, chiffre_path4, chiffre_path5, chiffre_path6]
 
-    print("------------------------")
-    print("Creating test data base")
+    print("Creating data base with photos taken...\n")
 
     for path in img_paths:
         create_database(path)
         print("Data base for number " + str(path[-2]) + " created")
 
-    print("Test data base created")
-    print("------------------------")
+    print("\nData base created\n")
 
-    print("Creating training data base randomly")
-    random_csv('test.csv','training_database.csv')
-    print("Training data base created")
-    print("------------------------")
+    remove_file(trainingFile)
+    remove_file(testingFile)
+ 
+    print("Creating training and testing database randomly...")
+    random_csv('test.csv','training_database.csv', 'testing_database.csv', division)  
+    print("Training and testing database created\n")
 
-    print("Creating testing data base randomly")
-    random_csv('test.csv','testing_database.csv')
-    print("Testing data base created")
-    print("------------------------")
 
-'''
 if __name__ == "__main__":
-    # execute only if run as a script
-    main()
-'''
+    main(0.8)
