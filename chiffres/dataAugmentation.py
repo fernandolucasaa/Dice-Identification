@@ -1,12 +1,12 @@
 import numpy as np
-np.random.bit_generator = np.random._bit_generator
+#np.random.bit_generator = np.random._bit_generator
 import matplotlib.pyplot as plt
 import os
 import imageio
 import imgaug as ia
 import imgaug.augmenters as iaa
 
-def image_rotation(degree)
+def image_rotation(degree):
 
     img1 = os.getcwd() + '/Numero1/'
     img2 = os.getcwd() + '/Numero2/'
@@ -36,5 +36,5 @@ def image_rotation(degree)
 
 # degree: the step of the rotation
 # the images will be create in the folder with their originals
-# image_rotation(1)
+# image_rotation(30)
 
