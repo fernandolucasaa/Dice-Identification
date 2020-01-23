@@ -16,6 +16,7 @@ With pip, install with the command: "pip install jupyterlab"
 Next, use the command "pip install notebook" to install the notebook
 
 3. Using the algorithms of this project:
+	
 	3.1. Lunch the jupyter notebook 
 
 	3.2. The file "main.ipynb" analyse four classification methods: KNN, Decision Tree, Random Forest and SVM, all of them using the MNIST handwritten digits database (http://yann.lecun.com/exdb/mnist/) and also the photos taken from a pico camera.
