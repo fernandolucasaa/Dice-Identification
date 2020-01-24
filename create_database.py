@@ -46,57 +46,71 @@ def create_database(image_path):
         row.append(float(chiffre)) #the last column is the dice's number
 
         # open the file in the for appending new information (new row)
-        with open('test.csv', "a") as file:
+        with open('initial_test.csv', "a") as file:
             writer = csv.writer(file)
             writer.writerow(row)
 
 
-def random_csv(source_file, new_file_train, new_file_test, perc):
+def random_csv(source_file, new_file_train, new_file_test, new_file_validation, perc1, perc2):
     dice_numbers = [1, 2, 3, 4, 5, 6]
 
     df = pd.read_csv(source_file, header = None)
     
-    if perc < 0:
+    if perc1 < 0 or perc2 < 0:
         print("Percentage must be positive!")
         print("Traindataset and testdataset not created!")
         sys.exit()
-    elif perc > 1:
-        perc = (float(perc) / 100)
-    elif perc >= 0 and perc <= 1:
+    elif perc1> 1:
+        perc1 = (float(perc1) / 100)
+    elif perc1 >= 0 and perc1 <= 1:
         pass
 
-    print("Percentage of the trainningset: " + str(perc))
-    print("Percentage of the trainningset: " + str(1-perc) + "\n")
+    if perc2 > 1:
+        perc2 = (float(perc2) / 100)
+    elif perc2 >= 0 and perc2 <= 1:
+        pass
+
+    print("Percentage of the trainset: " + str(perc1))
+    print("Percentage of the testset: " + str(perc2))
+    print("Percentage of the validationset: " + str(1-perc1-perc2) + "\n")
 
     for number in dice_numbers:
         dn = df.loc[df[784] == number]
-        train_numbers = int(math.ceil(len(dn) * perc))
-        test_numbers = len(dn) - train_numbers
-        if test_numbers == 0:
-            test_numbers = 1
+        train_numbers = int(math.ceil(len(dn) * perc1))
+        test_numbers = int(math.ceil(len(dn) * perc2))
+        validation_numbers = len(dn) - train_numbers - test_numbers
+
+        if validation_numbers <= 0:
+            validation_numbers = 1
 
         df_percTrain = dn.head(train_numbers)
+        df_percValidation = dn[(train_numbers):(train_numbers + validation_numbers)]
         df_percTest = dn.tail(test_numbers)
         if number == 1:
             df_train = df_percTrain 
             df_test = df_percTest
+            df_validation = df_percValidation
         else:
             df_train = df_train.append(df_percTrain)
             df_test = df_test.append(df_percTest)
+            df_validation = df_validation.append(df_percValidation)
 
     ds_train = df_train.sample(frac=1).reset_index(drop = True)
-    ds_test = df_test.sample(frac=1).reset_index(drop = True)  
+    ds_test = df_test.sample(frac=1).reset_index(drop = True) 
+    ds_validation = df_validation.sample(frac=1).reset_index(drop = True)  
     
     ds_train.to_csv(new_file_train, header = None, index = False)
     ds_test.to_csv(new_file_test, header = None, index = False)
+    ds_validation.to_csv(new_file_validation, header = None, index = False)
 
     remove_file(source_file)
 
-def main(division):
+def main(div1, div2):
 
-    testFile = 'test.csv'
+    testFile = 'initial_test.csv'
     trainingFile = 'training_database.csv'
     testingFile = 'testing_database.csv'
+    validationFile = 'validation_database.csv'
 
     remove_file(testFile)
 
@@ -120,11 +134,10 @@ def main(division):
     remove_file(trainingFile)
     remove_file(testingFile)
  
-    print("Creating training and testing database randomly...")
-    random_csv('test.csv','training_database.csv', 'testing_database.csv', division)  
-    print("Training and testing database created\n")
+    print("Creating all dataset randomly...")
+    random_csv(testFile, trainingFile, testingFile, validationFile, div1, div2)  
+    print("Datasets created\n")
 
-'''
+
 if __name__ == "__main__":
-    main(0.8)
-'''
+    main(0.45, 0.35)
