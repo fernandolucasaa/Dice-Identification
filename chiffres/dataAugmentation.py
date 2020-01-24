@@ -6,7 +6,9 @@ import imageio
 import imgaug as ia
 import imgaug.augmenters as iaa
 
-def image_rotation(degree):
+def main(degree):
+
+    print("Creating more images with a rotation of " + str(degree) + " degrees...")
 
     img1 = os.getcwd() + '/Numero1/'
     img2 = os.getcwd() + '/Numero2/'
@@ -34,7 +36,11 @@ def image_rotation(degree):
             else:
                 pass
 
+    print("Finished creating the images!")
 # degree: the step of the rotation
 # the images will be create in the folder with their originals
-# image_rotation(30)
+'''
+if __name__ == "__main__":
+    main(30)
+'''
 
