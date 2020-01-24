@@ -125,32 +125,35 @@ def main():
         sys.exit() 
 
     degree = raw_input('How many degrees step?\n')
-    if int(degree) <= 0:
-        sys.exit()     
+    while(float(degree) <= 0):
+    	print("\nDegree must be a positive integer!")
+    	degree = raw_input('Try again: how many degrees step?\n')     
 
     proportion_trainset = raw_input('How much do you want to use as trainset?\n')
-    if int(proportion_trainset) < 0:
-        print("Percentage must be positive!")
-        sys.exit()  
-    elif int(proportion_trainset) > 1:
+    while(float(proportion_trainset) <= 0):
+        print("\nPercentage must be positive!")
+        proportion_trainset = raw_input('Try again: how much do you want to use as trainset?\n')  
+    
+    if float(proportion_trainset) > 1:
     	print("Converting in percentage\n")
         proportion_trainset = (float(proportion_trainset) / 100)
-    elif int(proportion_trainset) >= 0 and int(proportion_trainset) <= 1:
+    elif float(proportion_trainset) >= 0 and float(proportion_trainset) <= 1:
         pass
 
-    print("The percentage of the tetset must be smaller than " + str(1 - proportion_trainset))
+    print("The percentage of the testset must be smaller than " + str(1 - float(proportion_trainset)))
     proportion_testset = raw_input('How much do you want to use as testset?\n')
-    if int(proportion_testset) < 0:
+    while(float(proportion_testset) <= 0):
         print("Percentage must be positive!")
-        sys.exit()  
-    elif int(proportion_testset) > 1:
+        proportion_testset = raw_input('Try again: how much do you want to use as testset?\n')   
+    
+    if float(proportion_testset) > 1:
     	print("Converting in percentage\n")
         proportion_testset = (float(proportion_testset) / 100)
-    elif int(proportion_testset) >= 0 and int(proportion_testset) <= 1:
+    elif float(proportion_testset) >= 0 and float(proportion_testset) <= 1:
         pass
 
-    image_df = rotate_images(int(degree))
-    random_dataset(image_df, proportion_trainset, proportion_testset)
+    image_df = rotate_images(int(math.ceil(float(degree))))
+    random_dataset(image_df, float(proportion_trainset), float(proportion_testset))
 
     print("Finished creating databases!")
 
