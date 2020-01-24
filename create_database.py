@@ -98,6 +98,10 @@ def random_csv(source_file, new_file_train, new_file_test, new_file_validation, 
     ds_train = df_train.sample(frac=1).reset_index(drop = True)
     ds_test = df_test.sample(frac=1).reset_index(drop = True) 
     ds_validation = df_validation.sample(frac=1).reset_index(drop = True)  
+
+    np.save('train',ds_train.to_numpy())
+    np.save('test',ds_test.to_numpy())
+    np.save('validation',ds_validation.to_numpy())
     
     ds_train.to_csv(new_file_train, header = None, index = False)
     ds_test.to_csv(new_file_test, header = None, index = False)
