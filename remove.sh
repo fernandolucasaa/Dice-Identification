@@ -5,10 +5,10 @@
 ##########        REMOVE BASH      ###################
 ######################################################
 
-# This bash is executable only for deleting all dataset
-# .npy files, to make possible to update the Github 
-# project 
-
+'''
+	This bash is executable only for deleting all dataset 
+	.npy files, to make possible to update the Github project 
+'''
 # Firstly we delete the datasets files
 
 trainFile=./train.npy
@@ -66,6 +66,20 @@ fi
 
 # Finally we deleate the photos files
 
-#rm -r ./application/photos/test_photos.npy
-#echo "Deleted photos database!"
+photos_classes_file=./firstAnalyse/test_photos_classes.npy
+photos_file=./test_photos.npy
+
+if [ -f "$photos_classes_file" ];then
+	rm -r $photos_classes_file
+	echo "Deleted photos classes database!"
+else
+	echo "Photos classes database does not exist!"
+fi
+
+if [ -f "$photos_file" ];then
+	rm -r $photos_file
+	echo "Deleted photos database!"
+else
+	echo "Photos database does not exist!"
+fi
 echo "All files removed!"
