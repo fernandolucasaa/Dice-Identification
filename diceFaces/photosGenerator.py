@@ -480,7 +480,7 @@ def separeteDatasets(dataset):
     ds_train = df_train.sample(frac=1).reset_index(drop = True) 
     ds_validation = df_validation.sample(frac=1).reset_index(drop = True)  
     
-    print("------------------[TEST DATASET]-----------------------")
+    print("------------------[TEST PHOTOS DATASET]-----------------------")
     print("Number of numbers in the testset: " + str(len(ds_test)))
     balance_test = len(set(classesTest_size))
     if balance_test == 1:
@@ -488,12 +488,12 @@ def separeteDatasets(dataset):
     else:
         print("\nClasses are UNBALANCED!\n")    
 
-    remove_file('./test.npy')
+    remove_file('./photosFeatures_test.npy')
     print("Created test database")
-    np.save('./test', ds_test.to_numpy())
+    np.save('./photosFeatures_test', ds_test.to_numpy())
     print("--------------------------------------------------------\n")
 
-    print("------------------[TRAIN DATASET]-----------------------")
+    print("------------------[TRAIN PHOTOS DATASET]-----------------------")
     print("Number of numbers in the trainset: " + str(len(ds_train)))
     balance_train = len(set(classesTrain_size))
     if balance_train == 1:
@@ -501,12 +501,12 @@ def separeteDatasets(dataset):
     else:
         print("\nClasses are UNBALANCED!\n")    
 
-    remove_file('./train.npy')
+    remove_file('./photosFeatures_train.npy')
     print("Created train database")
-    np.save('./train', ds_train.to_numpy())
+    np.save('./photosFeatures_train', ds_train.to_numpy())
     print("--------------------------------------------------------\n")
     
-    print("------------------[VALIDATION DATASET]------------------")
+    print("------------------[VALIDATION PHOTOS DATASET]------------------")
     print("Number of numbers in the validationset: " + str(len(ds_validation)))
     balance_validation = len(set(classesValidation_size))
     if balance_validation == 1:
@@ -514,16 +514,16 @@ def separeteDatasets(dataset):
     else:
         print("\nClasses are UNBALANCED!\n")
 
-    remove_file('./validation.npy')
+    remove_file('./photosFeatures_validation.npy')
     print("Created validation database")
-    np.save('./validation', ds_validation.to_numpy())
+    np.save('./photosFeatures_validation', ds_validation.to_numpy())
     print("--------------------------------------------------------\n")
 
 # This is the main function of this program.    
 def main(argv):
 
-    photos_zip_file = './newPhotos.zip'
-    final_folder = './newPhotos'
+    photos_zip_file = './diceFaces/newPhotos.zip'
+    final_folder = './diceFaces/newPhotos'
     
     angle = int(argv[0])
 
@@ -560,6 +560,8 @@ def main(argv):
     remove_file('./firstAnalyse/test_photos_classes.npy')
     print("Created test database\n")
     np.save('./firstAnalyse/test_photos_classes', ds_photos.to_numpy())
+
+    separeteDatasets(ds_photos)
 
     # Delete all binary unzipped files to reduce the size of the project
     print("Deleting folder with all photos...")

@@ -5,13 +5,13 @@
 ##########      INITIALIZATION BASH      #############
 ######################################################
 
-'''
-	This is a initilization bash that generates all dataset that are used in the study.
-	Moreover it generates seconds datasets that can be used for further studies.
-'''
+
+# This is a initilization bash that generates all dataset that are used in the study.
+# Moreover it generates seconds datasets that can be used for further studies.
+
 
 genFile=./firstAnalyse/generateDataset.py
-imgFile=./diceFaces/photosGenerator.py 360
+imgFile=./diceFaces/photosGenerator.py
 
 echo "Start executing algorithms to create the dataset..."
 
@@ -24,7 +24,7 @@ fi
 
 echo "Creating datasets from photos taken..."
 if [ -f "$imgFile" ];then
-	python $imgFile
+	python $imgFile 1
 else
 	echo "Python script does not exist!"
 fi

@@ -5,10 +5,10 @@
 ##########        REMOVE BASH      ###################
 ######################################################
 
-'''
-	This bash is executable only for deleting all dataset 
-	.npy files, to make possible to update the Github project 
-'''
+
+# This bash is executable only for deleting all dataset 
+# .npy files, to make possible to update the Github project 
+
 # Firstly we delete the datasets files
 
 trainFile=./train.npy
@@ -61,7 +61,7 @@ if [ -f "$validation_classes_file" ];then
 	rm -r $validation_classes_file
 	echo "Deleted validation classes database!"
 else
-	echo "validation database does not exist!"
+	echo "Validation database does not exist!"
 fi
 
 # Finally we deleate the photos files
@@ -82,4 +82,32 @@ if [ -f "$photos_file" ];then
 else
 	echo "Photos database does not exist!"
 fi
+
+# And also the new database generated
+
+photosTrain_classes_file=./photosFeatures_train.npy
+photosTest_classes_file=./photosFeatures_test.npy
+photosValidation_classes_file=./photosFeatures_validation.npy
+
+if [ -f "$photosTrain_classes_file" ];then
+	rm -r $photosTrain_classes_file
+	echo "Deleted photos train classes database!"
+else
+	echo "Train photos database does not exist!"
+fi
+
+if [ -f "$photosTest_classes_file" ];then
+	rm -r $photosTest_classes_file
+	echo "Deleted photos test classes database!"
+else
+	echo "Test photos database does not exist!"
+fi
+
+if [ -f "$photosValidation_classes_file" ];then
+	rm -r $photosValidation_classes_file
+	echo "Deleted photos validation classes database!"
+else
+	echo "Validation photos database does not exist!"
+fi
+
 echo "All files removed!"
