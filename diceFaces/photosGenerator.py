@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # photosGenerator.py --- Convert taken photos into .npy files
 
-# Copyright (c) 2011-2016  Fabio Morooka <fabio.morooka@gmail.com> and Fernando Amaral <fernando.lucasaa@gmail.com>
+# Copyright (c) 2019-2020  Fabio Morooka <fabio.morooka@gmail.com> and Fernando Amaral <fernando.lucasaa@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
