@@ -85,9 +85,9 @@ fi
 
 # And also the new database generated
 
-photosTrain_classes_file=./photosFeatures_train.npy
-photosTest_classes_file=./photosFeatures_test.npy
-photosValidation_classes_file=./photosFeatures_validation.npy
+photosTrain_classes_file=./secondAnalyse/photosFeatures_train.npy
+photosTest_classes_file=./secondAnalyse/photosFeatures_test.npy
+photosValidation_classes_file=./secondAnalyse/photosFeatures_validation.npy
 
 if [ -f "$photosTrain_classes_file" ];then
 	rm -r $photosTrain_classes_file

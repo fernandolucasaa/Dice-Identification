@@ -24,7 +24,7 @@ fi
 
 echo "Creating datasets from photos taken..."
 if [ -f "$imgFile" ];then
-	python $imgFile 1
+	python $imgFile 8
 else
 	echo "Python script does not exist!"
 fi

@@ -187,27 +187,37 @@ def image_processing_list(folder_path):
         
     return image_list
 
-# Create a list with all the processed images adding the target to each image
+# Create a list with all the images adding the target to each image
 #
 # Parameters:
 # - dataset_path: path with all the folders, each of theses folders has images of one
 # dice's face
 #
 # Return:
-# - dataset_list: list with all the processed images with respective targets
+# - dataset_list: list with all the images with respective targets
 
 def create_data_set(dataset_path):
     
-    dataset_list = []
+    test_list = []
+    train_list = []
+    validation_list = []
     
     # loop over all the folders (1 until 6)
-    for folder_name in os.listdir(dataset_path):
-        
+    for folder_name in os.listdir(dataset_path):        
         folder_path = dataset_path + '/' + folder_name
-        
+
+        filter_coef = 1
+
+        total_length = int(len(os.listdir(folder_path)) * filter_coef)
+        test_numbers = int(0.2 * total_length)
+        train_numbers = int(0.64 * total_length)
+        validation_numbers = int(0.16 * total_length)
+
+        num_image = 0 
+
         # loop over all the images
-        for im in os.listdir(folder_path):
-            
+        for im in os.listdir(folder_path):  
+            num_image += 1
             image_path = folder_path + '/' + im
             image_processed = image_processing(image_path, 0)
             
@@ -220,9 +230,23 @@ def create_data_set(dataset_path):
             row.append(target)
             
             # add the complete line
-            dataset_list.append(row)
-    
-    return dataset_list
+            if num_image <= test_numbers:
+                test_list.append(row)
+            elif num_image > test_numbers and num_image <= test_numbers + train_numbers:
+                train_list.append(row)
+            else:
+                validation_list.append(row)
+
+    dataset_test = load_data_set(np.asarray(test_list))
+    X_test, Y_test = cvt_obj_nparray(dataset_test)
+
+    dataset_train = load_data_set(np.asarray(train_list))
+    X_train, Y_train = cvt_obj_nparray(dataset_train)
+
+    dataset_validation = load_data_set(np.asarray(validation_list))
+    X_validation, Y_validation = cvt_obj_nparray(dataset_validation)
+
+    return X_test, Y_test, X_train, Y_train, X_validation, Y_validation
 
 
 # Create a list with all the processed images adding the target to each image
@@ -236,7 +260,7 @@ def create_data_set(dataset_path):
 # Return:
 # - dataset_list: list with all the processed images with respective targets
 
-def create_augmented_data_set(dataset_path, degree):
+def create_augmented_data_set_mnist(dataset_path, degree):
     
     dataset_list = []
     
@@ -266,6 +290,75 @@ def create_augmented_data_set(dataset_path, degree):
                 dataset_list.append(new_row)
     
     return dataset_list
+
+# Create a list with all the processed images adding the target to each image
+# The processed images are rotated to augmentated the data set
+#
+# Parameters:
+# - dataset_path: path with all the folders, each of theses folders has images of one
+# dice's face
+# - degree: rotation's degree
+# 
+# Return:
+# - dataset_list: list with all the processed images with respective targets
+def create_augmented_data_set(dataset_path, degree):
+    
+    test_list = []
+    train_list = []
+    validation_list = []
+    
+    # loop over all the folders (1 until 6)
+    for folder_name in os.listdir(dataset_path):        
+        folder_path = dataset_path + '/' + folder_name
+
+        filter_coef = 1
+        
+        total_length = int(len(os.listdir(folder_path)) * filter_coef)
+        test_numbers = int(0.2 * total_length)
+        train_numbers = int(0.64 * total_length)
+        validation_numbers = int(0.16 * total_length)
+
+        num_image = 0 
+
+        # loop over all the images
+        for im in os.listdir(folder_path):  
+            num_image += 1
+            image_path = folder_path + '/' + im
+            image_processed = image_processing(image_path, 0)
+
+            # rotate the processed image
+            for rot in range(0, 360, degree):
+                
+                rotate = iaa.Affine(rotate=rot) # rotate image
+                image_rotated = rotate.augment_images([image_processed])[0] # rotated image
+            
+                # convert the (28, 28) numpy array to a list (784)
+                row = image_processed.reshape(-1)
+                row = row.tolist()
+                
+                # add the target
+                target = float(folder_name)
+                row.append(target)
+                
+                # add the complete line
+                if num_image <= test_numbers:
+                    test_list.append(row)
+                elif num_image > test_numbers and num_image <= test_numbers + train_numbers:
+                    train_list.append(row)
+                else:
+                    validation_list.append(row)
+
+    dataset_test = load_data_set(np.asarray(test_list))
+    X_test, Y_test = cvt_obj_nparray(dataset_test)
+
+    dataset_train = load_data_set(np.asarray(train_list))
+    X_train, Y_train = cvt_obj_nparray(dataset_train)
+
+    dataset_validation = load_data_set(np.asarray(validation_list))
+    X_validation, Y_validation = cvt_obj_nparray(dataset_validation)
+
+    return X_test, Y_test, X_train, Y_train, X_validation, Y_validation
+#---------------------------------------------------------------------------------------------------#
 
 class Digit:
     def __init__(self, data, target):
@@ -421,7 +514,10 @@ def balance_dataset(dataset):
         
     for i in range(1, 7):
         dl = dataset.loc[dataset[12] == i]
-        dh = dl.head(quantity)
+        if quantity*2 != Y_data_count[less_number]:
+            dh = dl.head(quantity+1)
+        else:
+            dh = dl.head(quantity)
         dt = dl.tail(quantity)
         df_rec = dt.append(dh)
         if i == 1:
@@ -442,82 +538,30 @@ def verify_balance(Y_data):
             return False
     return True
 
-def separeteDatasets(dataset):
-    diceNumbers = range(1,7)
-    classesTest_size = []
-    classesTrain_size = []
-    classesValidation_size = []
-
-    filter_coef = 1
-
-    for num in diceNumbers:
-        dl = dataset.loc[dataset[12] == num]
-
-        total_length = int(len(dl) * filter_coef)
-
-        test_numbers = int(0.2 * total_length)
-        train_numbers = int(0.64 * total_length)
-        validation_numbers = int(0.16 * total_length)
-
-        classesTest_size.append(test_numbers)
-        classesTrain_size.append(train_numbers)
-        classesValidation_size.append(validation_numbers)
-
-        df_percTest = dl.head(test_numbers)
-        df_percTrain = dl[test_numbers:total_length-validation_numbers]
-        df_percValidation = dl.tail(validation_numbers)
-        
-        if num == 1:
-            df_test = df_percTest
-            df_train = df_percTrain
-            df_validation = df_percValidation
-        else:
-            df_test = df_test.append(df_percTest)
-            df_train = df_train.append(df_percTrain)
-            df_validation = df_validation.append(df_percValidation)
-
-    ds_test = df_test.sample(frac=1).reset_index(drop = True)
-    ds_train = df_train.sample(frac=1).reset_index(drop = True) 
-    ds_validation = df_validation.sample(frac=1).reset_index(drop = True)  
-    
-    print("------------------[TEST PHOTOS DATASET]-----------------------")
-    print("Number of numbers in the testset: " + str(len(ds_test)))
-    balance_test = len(set(classesTest_size))
-    if balance_test == 1:
-        print("\nClasses are BALANCED!, with " + str(classesTest_size[0]) + " sample for class\n")
+def save_feature_file(X_data_notNorm, Y_data, filename):
+    X_data = normalize(X_data_notNorm)
+    print("Checking balance of classes...")
+    if not(verify_balance(Y_data)):
+        print("Classes are UNBALANCED!")
+        print(Counter(Y_data)) 
+        print("\nBalancing the dataset...")
+        ds_data = balance_dataset(join_data(X_data, Y_data))
+        print("Re-checking balance of classes...")
+        if verify_balance(ds_data.iloc[:,-1].to_numpy()):
+            print("Classes are BALANCED!\n")
     else:
-        print("\nClasses are UNBALANCED!\n")    
+        print("Classes are BALANCED!\n")
+        ds_data = join_data(X_data, Y_data)
 
-    remove_file('./photosFeatures_test.npy')
-    print("Created test database")
-    np.save('./photosFeatures_test', ds_test.to_numpy())
-    print("--------------------------------------------------------\n")
+    df_data = ds_data.sample(frac=1).reset_index(drop = True)
 
-    print("------------------[TRAIN PHOTOS DATASET]-----------------------")
-    print("Number of numbers in the trainset: " + str(len(ds_train)))
-    balance_train = len(set(classesTrain_size))
-    if balance_train == 1:
-        print("\nClasses are BALANCED!, with " + str(classesTrain_size[0]) + " sample for class\n")
-    else:
-        print("\nClasses are UNBALANCED!\n")    
+    print("Number of digits in the dataset: " + str(len(df_data)))
+    print("Number of digits per class: " + str(len(df_data)/6))
 
-    remove_file('./photosFeatures_train.npy')
-    print("Created train database")
-    np.save('./photosFeatures_train', ds_train.to_numpy())
-    print("--------------------------------------------------------\n")
-    
-    print("------------------[VALIDATION PHOTOS DATASET]------------------")
-    print("Number of numbers in the validationset: " + str(len(ds_validation)))
-    balance_validation = len(set(classesValidation_size))
-    if balance_validation == 1:
-        print("\nClasses are BALANCED!, with " + str(classesValidation_size[0]) + " sample for class\n")
-    else:
-        print("\nClasses are UNBALANCED!\n")
-
-    remove_file('./photosFeatures_validation.npy')
-    print("Created validation database")
-    np.save('./photosFeatures_validation', ds_validation.to_numpy())
-    print("--------------------------------------------------------\n")
+    # Creating only one dataset, in this case a test dataset
+    remove_file(filename + '.npy')
+    print("Created test database\n")
+    np.save(filename, df_data.to_numpy())
 
 # This is the main function of this program.    
 def main(argv):
@@ -537,31 +581,27 @@ def main(argv):
         print("Finished unzipping file\n")
 
 
-    test_photos = create_augmented_data_set(final_folder, angle)
+    # The test_photos are the images that will be used in the MNIST machine learning
+    test_photos = create_augmented_data_set_mnist(final_folder, angle)
 
     remove_file('./test_photos.npy')
     print("Created test photos database\n")
     np.save("./test_photos", test_photos)
-
-
+    
+    
+    # Creating dataset to compare features in machine learning comparing to MNIST
     X_photos_notNorm, Y_photos = create_data_file('./test_photos.npy')
-    X_photos = normalize(X_photos_notNorm)
-    print("Checking balance of classes...")
-    if not(verify_balance(Y_photos)):
-        print("Classes are UNBALANCED!")
-        print(Counter(Y_photos)) 
-        print("\nBalancing the dataset...")
-        ds_photos = balance_dataset(join_data(X_photos, Y_photos))
-        print("Re-checking balance of classes...")
-        if verify_balance(ds_photos.iloc[:,-1].to_numpy()):
-            print("Classes are BALANCED!\n")
+    save_feature_file(X_photos_notNorm, Y_photos, './firstAnalyse/test_photos_classes')
 
-    # Creating only one dataset, in this case a test dataset
-    remove_file('./firstAnalyse/test_photos_classes.npy')
-    print("Created test database\n")
-    np.save('./firstAnalyse/test_photos_classes', ds_photos.to_numpy())
-
-    separeteDatasets(ds_photos)
+    # This part is to generate the 3 datasets: Train, Test and Validation 
+    #that will be used to study the machine learning problem without MNIST
+    X_test_notNorm, Y_test, X_train_notNorm, Y_train, X_validation_notNorm, Y_validation = create_data_set(final_folder)
+    print("------------------[TEST PHOTOS DATASET]-----------------------")
+    save_feature_file(X_test_notNorm, Y_test, './secondAnalyse/photosFeatures_test')
+    print("------------------[TRAIN PHOTOS DATASET]-----------------------")
+    save_feature_file(X_train_notNorm, Y_train, './secondAnalyse/photosFeatures_train')
+    print("------------------[VALIDATION PHOTOS DATASET]-----------------------")
+    save_feature_file(X_validation_notNorm, Y_validation, './secondAnalyse/photosFeatures_validation')
 
     # Delete all binary unzipped files to reduce the size of the project
     print("Deleting folder with all photos...")
