@@ -110,4 +110,31 @@ else
 	echo "Validation photos database does not exist!"
 fi
 
+# And also some new dataset
+
+photosTrain_classes_file=./secondAnalyse/train.npy
+photosTest_classes_file=./secondAnalyse/test.npy
+photosValidation_classes_file=./secondAnalyse/validation.npy
+
+if [ -f "$photosTrain_classes_file" ];then
+	rm -r $photosTrain_classes_file
+	echo "Deleted photos train database!"
+else
+	echo "Train photos database does not exist!"
+fi
+
+if [ -f "$photosTest_classes_file" ];then
+	rm -r $photosTest_classes_file
+	echo "Deleted photos test database!"
+else
+	echo "Test photos database does not exist!"
+fi
+
+if [ -f "$photosValidation_classes_file" ];then
+	rm -r $photosValidation_classes_file
+	echo "Deleted photos validation classes database!"
+else
+	echo "Validation photos does not exist!"
+fi
+
 echo "All files removed!"

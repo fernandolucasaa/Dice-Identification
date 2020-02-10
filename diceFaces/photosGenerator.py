@@ -38,6 +38,7 @@ from scipy import ndimage
 from collections import Counter
 import pandas as pd
 import sys
+import time
 
 # This function verify if a file exists and if so it will remove it.
 def remove_file(filename):
@@ -565,7 +566,6 @@ def save_feature_file(X_data_notNorm, Y_data, filename):
 
 # This is the main function of this program.    
 def main(argv):
-
     photos_zip_file = './diceFaces/newPhotos.zip'
     final_folder = './diceFaces/newPhotos'
     
@@ -595,7 +595,8 @@ def main(argv):
 
     # This part is to generate the 3 datasets: Train, Test and Validation 
     #that will be used to study the machine learning problem without MNIST
-    X_test_notNorm, Y_test, X_train_notNorm, Y_train, X_validation_notNorm, Y_validation = create_data_set(final_folder)
+    #X_test_notNorm, Y_test, X_train_notNorm, Y_train, X_validation_notNorm, Y_validation = create_data_set(final_folder)
+    X_test_notNorm, Y_test, X_train_notNorm, Y_train, X_validation_notNorm, Y_validation = create_augmented_data_set(final_folder, angle)
     print("------------------[TEST PHOTOS DATASET]-----------------------")
     save_feature_file(X_test_notNorm, Y_test, './secondAnalyse/photosFeatures_test')
     print("------------------[TRAIN PHOTOS DATASET]-----------------------")

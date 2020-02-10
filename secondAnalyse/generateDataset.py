@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 # generateDatabase.py --- Reading binary MNIST files algorithm
 
+# Copyright (c) 2019-2020  Fabio Morooka <fabio.morooka@gmail.com> and Fernando Amaral <fernando.lucasaa@gmail.com>
+
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # code:
 
 from collections import Counter
@@ -366,8 +388,6 @@ def create_all_data():
 
 def create_train_data_list():
     create_dataset()
-    remove_file('./test.npy')
-    remove_file('./validation.npy')
     print("Generating TRAIN data...")
     train_list = create_data_list('./train.npy')
     
@@ -375,8 +395,6 @@ def create_train_data_list():
 
 def create_test_data_list():
     create_dataset()
-    remove_file('./train.npy')
-    remove_file('./validation.npy')
     print("Generating TEST data...")
     test_list = create_data_list('./test.npy')
     
@@ -384,8 +402,6 @@ def create_test_data_list():
 
 def create_validation_data_list():
     create_dataset()
-    remove_file('./train.npy')
-    remove_file('./test.npy')
     print("Generating VALIDATION data...")
     validation_list = create_data_list('./validation.npy')
     
@@ -393,8 +409,6 @@ def create_validation_data_list():
 
 def create_train_data():
     create_dataset()
-    remove_file('./test.npy')
-    remove_file('./validation.npy')
     print("Generating TRAIN data...")
     X_train, Y_train = create_data_file('./train.npy')
     
@@ -402,8 +416,6 @@ def create_train_data():
 
 def create_test_data():
     create_dataset()
-    remove_file('./train.npy')
-    remove_file('./validation.npy')
     print("Generating TEST data...")
     X_test, Y_test = create_data_file('./test.npy')
     
@@ -411,8 +423,6 @@ def create_test_data():
 
 def create_validation_data():
     create_dataset()
-    remove_file('./train.npy')
-    remove_file('./test.npy')
     print("Generating VALIDATION data...")
     X_validation, Y_validation = create_data_file('./validation.npy')
     
